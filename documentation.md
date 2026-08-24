@@ -1,155 +1,63 @@
-<!-- # Documentation
+# Hospital Objects Project Page
 
-If you discover any bugs, imperfections, or features you'd like from this template, I would super-duper appreciate it if you [filed an issue](https://github.com/RomanHauksson/academic-project-astro-template/issues/new), even if you eventually figure it out yourself. You can even book a call with me using [my meeting scheduler](https://cal.com/romanhauksson/meeting), during which I can help you debug something or give you a tour of the repository.
+This repository contains the Astro project page for the research paper
+"Hospital Objects: An Object Library for Robotic Nursing Assistance." The page
+summarizes a field study of nursing supplies and the perception, grasping, and
+control challenges they introduce for robots.
 
-## Working with AI tools
+## Content
 
-If you're a student or researcher at an educational institution, [you can get free access to GitHub Copilot Pro](https://docs.github.com/en/copilot/how-tos/manage-your-account/get-free-access-to-copilot-pro).
+The page is authored in [src/paper.mdx](./src/paper.mdx). This file contains:
 
-To get a quick draft started, try copying the TeX source of your paper into some subdirectory and asking Copilot to turn it into a project page. Here's an example of a prompt you could use:
+- The browser metadata and page title in its frontmatter.
+- The header, conference information, and cover image.
+- The abstract, copied verbatim from the paper.
+- A concise summary of the field study and its findings.
+- Figures and captions describing the nursing-supply object library.
 
-```text
-Use the website template in this directory to make a project page for my research paper. You can find the TeX source of the paper in `/<directory>/`. Copy the abstract verbatim, but the rest of the project page should be a summary to show off my key results and figures. Use bullet points sparingly. Copy any images you use for the page into `/src/assets/`. At the end, give me a few suggestions for figures I could make that were not in the TeX source or interactive elements I could add to the page.
+Keep research claims and numerical results synchronized with the paper source.
+The abstract should remain verbatim unless the paper itself changes.
+
+## Assets
+
+Paper images are stored in [src/assets/Figures](./src/assets/Figures). The
+labeled object-kit overview is [kit_square.png](./src/assets/kit_square.png).
+Import images from `src/paper.mdx` and display them with the local `Picture`
+component so Astro can optimize their formats and sizes.
+
+The [Dataset.xlsx](./src/assets/Dataset.xlsx) file contains the associated
+study data. It is kept as a source asset and is not currently rendered on the
+page.
+
+## Local development
+
+Install dependencies and start the development server from the repository root:
+
+```bash
+npm install
+npm run dev
 ```
 
-I've already generated an outline of the repository for GitHub Copilot in [`/.github/copilot-instructions.md`](./.github/copilot-instructions.md), configured an MCP server to give it access to Astro's documentation in [`/.vscode/mcp.json`](./.vscode/mcp.json), and configured [ESLint](https://eslint.org/) to catch simple errors quickly. None of these should need any further configuration on your part, and they'll help Copilot perform better.
+The site is available at `http://localhost:4321`. Astro reloads the page when
+`src/paper.mdx` or a component changes.
 
-For more guidance on using AI tools with this repository, see [Astro's guide](https://docs.astro.build/en/guides/build-with-ai/).
+## Production build
 
-## Header and cover visual
+Run the type checks and static build with:
 
-The page header — the title, authors, conference, author notes, and link buttons — is rendered by the `Header` component at the top of [`./src/paper.mdx`](./src/paper.mdx). Edit its props to change the header content:
-
-```mdx
-<Header
-  title="My Paper Title"
-  conference="Conference Name"
-  authors={[
-    {
-      name: "Your Name",
-      url: "https://example.com",
-      institution: "Your Institution",
-      notes: ["*"],
-    },
-  ]}
-  notes={[{ symbol: "*", text: "equal contribution" }]}
-  links={[{ name: "Paper", url: "https://...", icon: "ri:file-pdf-2-line" }]}
-/>
+```bash
+npm run build
 ```
 
-Note that the `title` in the frontmatter is separate: it sets the browser-tab title and the social "link preview" card (alongside `description` and `thumbnail`), while the `title` prop on `Header` sets the heading displayed on the page. They're usually the same, but you can set them independently.
+The generated site is written to `dist/`. Images imported through Astro are
+converted into responsive optimized assets during this build.
 
-### Adding a cover
+## Future extensions
 
-To place a cover image or video behind the header, import the asset and pass it through the component's `background` slot using the `Picture` or `Video` component:
+Useful additions for the project page include:
 
-```mdx
-import cover from "./assets/cover.png";
-
-<Header title="..." authors={[...]}>
-  <Picture slot="background" src={cover} alt="" />
-</Header>
-```
-
-```mdx
-<Header title="..." authors={[...]}>
-  <Video slot="background" src={...} controls={false} />
-</Header>
-```
-
-Store cover **images** in `./src/assets/` so they're optimized (AVIF, responsive sizes) just like figures. **Videos** are served as-is — Astro doesn't optimize video — so keep them short and well-compressed (a muted, looping, controls-free clip works well as a backdrop). The cover fills the width of the page and the height of the header, cropping to cover the area. The header text is shown in white over a subtle dark overlay with a text shadow, so it stays legible regardless of the page's color theme — pick a cover that looks good behind white text.
-
-## Videos
-
-By default, videos displayed using the `Video` component will be muted and play automatically. To display a video that contains audio, I recommend the following settings:
-
-```mdx
-<Video src={...} muted={false} autoplay={false} playsinline={false} />
-```
-
-Note that `autoplay` is set to false – autoplaying a video with audio is bad form, and most modern browsers won't even let you do it anyway. `playsinline` is also set to false, so when the user begins playing the video on mobile, it will go fullscreen.
-
-You can disable the controls to make your video appear like a GIF would. Do this instead of literally using a GIF; it's much more performant.
-
-```mdx
-<Video src={...} controls={false} />
-```
-
-For longer videos, you probably want to use a hosted video service, like YouTube:
-
-```mdx
-<YouTubeVideo videoId="..." />
-```
-
-(Or [Mux](https://docs.astro.build/en/guides/media/mux/), if you're feeling fancy or want more control.)
-
-## Fonts
-
-[The original Nerfies project page](https://nerfies.github.io/) uses the Google Sans font, which is technically [licensed by Google and unavailable for public use](https://developers.google.com/fonts/faq#can_i_use_the_product_sans_or_google_sans_fonts). Instead, I choose to use [Noto Sans](https://fonts.google.com/noto/specimen/Noto+Sans), which looks similar, supports a wide range of glyphs, and is a [variable font](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_fonts/Variable_fonts_guide) (so it loads faster).
-
-If you want to use a different font, consult the docs on [Astro's experimental Fonts API](https://docs.astro.build/en/reference/experimental-flags/fonts/). You'll have to edit the following lines. If you're using a [Google Font](https://fonts.google.com/), it's simple as editing the font name.
-
-In [`/astro.config.ts`](./astro.config.ts):
-
-```ts
-experimental: {
-  fonts: [
-    {
-      provider: fontProviders.google(),
-      name: "Noto Sans",
-      cssVariable: "--font-noto-sans",
-      weights: ["100 900"],
-    },
-  ];
-}
-```
-
-In [`/src/pages/index.astro`](./src/pages/index.astro):
-
-```astro
-<Font
-  cssVariable="--font-noto-sans"
-  preload={[{ subset: "latin", style: "normal" }]}
-/>
-
-...
-
-<body class="...font-(family-name:--font-noto-sans)..."></body>
-```
-
-Note that by default, the page only preloads the font file for the normal (non-italic), Latin subset of Google Noto. If your page is written in a language with a non-Latin alphabet, or the header contains text with italics, consider changing the default settings to decrease initial page load times.
-
-```astro
-<!-- Preload the Cyrillic subset instead of Latin -->
-<Font
-  cssVariable="--font-noto-sans"
-  preload={[{ subset: "cyrillic", style: "normal" }]}
-/>
-
-<!-- Preload the normal Latin subset as well as the italic version -->
-<Font cssVariable="--font-noto-sans" preload={[{ subset: "latin" }]} />
-```
-
-## Icons
-
-This template uses the [Astro Icon](https://www.astroicon.dev/) library for the icons in the buttons in the header.
-
-To use a custom icon:
-
-1. Search on [Iconify](https://icon-sets.iconify.design/) to find the icon you want. For example, the Hugging Face icon is `simple-icons:huggingface`, from the Simple Icons icon set.
-1. Install the corresponding icon set: `npm install @iconify-json/simple-icons`.
-1. If you're using the icon in one of the link buttons, put the icon name in the value of the `icon` key, like this:
-
-```yaml
-- name: Hugging Face
-  url: https://huggingface.co/
-  icon: simple-icons:huggingface
-```
-
-Or, to use it anywhere in an Astro component or MDX file:
-
-```mdx
-import { Icon } from "astro-icon/components";
-
-<Icon name={"simple-icons:huggingface"} />
-``` -->
+- An object browser filtered by deformability, transparency, packaging layers,
+  and manipulation failure modes.
+- A task-to-object matrix connecting nursing workflows to object properties.
+- Short videos showing retrieval, opening, sorting, and handover actions.
+- Downloadable annotations for benchmarking perception and manipulation systems.
