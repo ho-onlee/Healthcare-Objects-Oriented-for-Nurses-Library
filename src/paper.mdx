@@ -10,21 +10,46 @@ import HighlightedSection from "./components/HighlightedSection.astro";
 import Figure from "./components/Figure.astro";
 import Picture from "./components/Picture.astro";
 import kit from "./assets/kit_square.png";
-import measurement from "./assets/Figures/0751AE64.jpg";
+import Carousel from "./components/Carousel.astro";
+import CarouselSlide from "./components/CarouselSlide.astro";
+import fmeasurement from "./assets/Figures/0751AE64.jpg";
+import fD9D2672B from "./assets/Figures/D9D2672B.jpg";
+import f5B33AAE5 from "./assets/Figures/5B33AAE5.jpg";
+import f452E544F from "./assets/Figures/452E544F.jpg";
+import fF7E4253A from "./assets/Figures/F7E4253A.jpg";
 
 <Header
-  title="Hospital Objects: An Object Library for Robotic Nursing Assistance"
-  conference="IROS 2026"
+  title="Identifying Challenges with Medical Supply Objects for Robotic Manipulation in Clinical Settings"
+  conference="ICRA 2027"
   authors={[
-    { name: "Hospital Objects Research Team" },
-  ]}
+      {
+        name: "Seonhun Lee",
+        url: "https://seonhunlee.me",
+        institution: "University of Massachusetts Amherst",
+        notes: ["*"],
+      },
+      { name: "Gina L. Georgadarellis", institution: "University of Massachusetts Amherst", notes: ["*"] },
+      { name: "Cidalia J. Vital", institution: "Baystate Health", notes: ["†"] },
+      { name: "Frank C. Sup, IV", institution: "University of Massachusetts Amherst" },
+    ]}
+    notes={[
+        { symbol: "*", text: "Department of Mechanical and Industrial Engineering, University of Massachusetts Amherst, Amherst, MA 01003 USA" },
+        { symbol: "†", text: "Baystate Health, Springfield, MA 01199 USA" },
+      ]}
+      links={[
+        { name: "Paper", url: "https://github.com/RomanHauksson/academic-project-astro-template", icon: "ri:file-pdf-2-line" },
+        { name: "Dataset", url: "https://github.com/RomanHauksson/academic-project-astro-template", icon: "ri:download-2-line" },
+ //       { name: "Code", url: "https://github.com/RomanHauksson/academic-project-astro-template", icon: "ri:github-line" },
+ //       { name: "arXiv", url: "https://github.com/RomanHauksson/academic-project-astro-template", icon: "academicons:arxiv" },
+//        { name: "Slides", url: "https://github.com/RomanHauksson/academic-project-astro-template", icon: "ri:slideshow-2-line" },
+      ]}
 >
   <Picture slot="background" src={kit} alt="" priority />
 </Header>
 
 <HighlightedSection>
 
-## Abstract
+## Abstract 
 
 Robotic assistance in healthcare has advanced rapidly, yet the manipulation of medical supplies remains underexplored. Existing object libraries and manipulation benchmarks primarily focus on household items or surgical instruments, leaving the distinctive physical characteristics of clinical nursing supplies largely unrepresented. To address this gap, a case study was conducted in a Preoperative/Postanesthesia Care Unit supply closet to systematically document the materials, packaging architectures, and storage practices associated with commonly used nursing items. The analysis shows that medical supplies exhibit multilayer packaging, high deformability, transparency, and thin geometric features that introduce substantial challenges for robotic perception, grasping, and control. These objects were categorized, their packaging levels quantified, and their manipulation difficulties identified, revealing fundamental differences from rigid household objects typically used in robotics research. The findings motivate the creation of a dedicated medical‑supply object library and provide foundational insights for designing robotic systems that support nursing workflows.
 
@@ -38,7 +63,6 @@ Rising healthcare demand and severe nursing shortages negatively impact job sati
 ### The Engineering-Nursing Knowledge Gap
 While robotic manipulation can significantly reduce clinical workloads, a major barrier exists due to the knowledge gap between engineers and healthcare professionals. Because nursing roles and tasks are diverse, patient-dependent, and constantly evolving, designing a robot that covers every aspect of nursing is exceptionally difficult.
 ## Why clinical objects are different
-
 Robotics benchmarks are dominated by rigid household objects and surgical instruments. Nursing supply closets present a different manipulation regime: objects are often sterile-wrapped, transparent, thin, flexible, or nested inside several layers of packaging. A robot must recognize not only the item, but also the packaging state and the safe way to acquire it.
 
 ## Field study
@@ -49,15 +73,31 @@ We documented the contents and storage practices of a Preoperative/Postanesthesi
   <Picture slot="figure" src={kit} alt="Ten labeled nursing supplies arranged on a clinical work surface" />
   <Fragment slot="caption">A representative object kit from the study. The collection spans rigid containers, thin dressings, transparent packaging, tubing, adhesive materials, and small irregular components.</Fragment>
 </Figure>
+| Name | Secondary Packaging | Primary Packaging | Stacked$^1$ | Deformable$^1$ | Flat$^1$ | Transparent$^1$ | Label in Figure |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| Emesis Bin | - | - | - - $\circ$ | - - - | - - - | - - - | (a) |
+| Medical Tape | - | - | - - - | - - - | - - - | - - - | (b) |
+| Standard Bore Extension Sets | Plastic bag | Peel pack | $\circ$ - - | - $\circ$ $\circ$ | - $\vartriangle$ $\vartriangle$ | - - $\vartriangle$ | (c) |
+| Pre-filled Saline Flush Syringes | Box | Plastic bag | - $\circ$ - | - - - | - - - | - $\circ$ $\vartriangle$ | (d) |
+| Shielded IV Catheter | - | Peel pack | - $\circ$ - | - - - | - - $\vartriangle$ | - - $\vartriangle$ | (e) |
+| Transparent Film Dressings | Box | Paper Packet | - $\circ$ - | - $\circ$ $\circ$ | - $\circ$ $\circ$ | - - - | (f) |
+| Transparent Film Dressing Frame Style | - | Paper Packet | - $\circ$ - | - $\circ$ $\circ$ | - $\circ$ $\circ$ | - - - | (g) |
+| Disposable Tourniquets | - | Box | - $\triangle$ - | - - $\circ$ | - - $\vartriangle$ | - - - | (h) |
+| Chlorhexidine Gluconate Applicator | - | Peel pack | - - - | - - - | - - - | - - - | (i) |
+| Alcohol Prep Pad | Box | Packet | - $\circ$ - | - $\circ$ $\circ$ | - $\circ$ $\circ$ | - - - | (j) |
+
+- <small>$^1$ Attribute coded for each packaging layer and the object (left$\rightarrow$right): Secondary, Primary, Object. </small>
+- <small>$^1$ Note: $\circ$ (present), $-$ (absent), and $\triangle$ (intermediate or mixed).</small>
 
 ## What the library makes visible
 
 The observations point to four recurring sources of difficulty:
 
 - **Layered packaging:** the useful object and the graspable surface are often different things.
+- **Dimensionality:** Flat objects, thin edges, small connectors, and narrow openings demand precise perception and control.
 - **Deformation:** wrappers, dressings, tape, and tubing change shape during pickup and placement.
-- **Appearance ambiguity:** transparent surfaces and reflective packaging weaken standard visual cues.
-- **Fine geometry:** thin edges, small connectors, and narrow openings demand precise perception and control.
+- **Transparency:** transparent surfaces and reflective packaging weaken standard visual cues.
+- **Multiple Object:** Objects that are normally stored stacked or inside a stack of boxes.
 
 These properties explain why performance on conventional object sets does not directly predict performance in nursing workflows. They also provide a concrete vocabulary for engineers and nurses to discuss what a robot must sense and manipulate.
 
@@ -65,10 +105,25 @@ These properties explain why performance on conventional object sets does not di
 
 The proposed library is intended as a foundation for task-aware evaluation. Objects can be annotated by packaging level, material behavior, transparency, geometric delicacy, and the manipulation actions they invite. This shifts the benchmark question from “Can the robot grasp this shape?” to “Can the robot handle this clinical item in the state in which it is actually used?”
 
-<Figure>
-  <Picture slot="figure" src={measurement} alt="A nursing supply measured on a calibrated work surface" />
-  <Fragment slot="caption">The documentation process pairs object photographs with scale and physical measurements, preserving the details that are easy to lose in an abstract object category.</Fragment>
-</Figure>
+
+<Carousel>
+  <CarouselSlide>
+    <Picture src={fD9D2672B} alt="True photo of two dogs running side-by-side in shallow water" />
+  </CarouselSlide>
+  <CarouselSlide>
+    <Picture src={f452E544F} alt="True photo of two dogs running side-by-side in shallow water" />
+  </CarouselSlide>
+  <CarouselSlide>
+    <Picture src={f5B33AAE5} alt="True photo of two dogs running side-by-side in shallow water" />
+  </CarouselSlide>
+  <CarouselSlide>
+    <Picture src={fF7E4253A} alt="True photo of two dogs running side-by-side in shallow water" />
+  </CarouselSlide>
+  <CarouselSlide>
+    <Picture src={fmeasurement} alt="True photo of two dogs running side-by-side in shallow water" />
+  </CarouselSlide>
+</Carousel>
+
 
 ## Outlook
 
