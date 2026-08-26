@@ -24,17 +24,12 @@ jobs:
         with:
           fetch-depth: 0 # Shallow clones should be disabled for a better experience with the action
           lfs: true # If your repository uses Git LFS, set this to true
-          sparse-checkout: |
-            src
-            public
-            package.json
-            astro.config.ts
-            tsconfig.json
+
             
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: npm # Change to pnpm / yarn / bun if you use a different package manager
 
       - name: Setup Pages
