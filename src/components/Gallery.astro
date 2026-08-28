@@ -1,163 +1,57 @@
 ---
 import { Icon } from "astro-icon/components";
+import { Picture as AstroPicture } from "astro:assets";
 
 interface Props {
-  images?: { src: string; alt?: string }[];
+  images?: { src: any; alt?: string }[];
   rows?: number;
   gap?: string;
   visibleCols?: number;
-  rowHeight?: string; // New: explicitly define the height of a single row
+  rowHeight?: string;
 }
 
 const images = Astro.props.images;
 const rows = Astro.props.rows ?? 2;
 const gap = Astro.props.gap ?? "1rem";
-const visibleCols = Astro.props.visibleCols ?? 3.15; 
+const visibleCols = Astro.props.visibleCols ?? 3.15;
 const rowHeight = Astro.props.rowHeight ?? "200px";
 ---
 
 <div class="gallery-container relative w-full group my-6 overflow-hidden">
-  
-  <button 
-    class="scroll-btn scroll-left absolute left-2 top-1/2 -translate-y-1/2 z-20 h-10 w-10 rounded-full bg-white/90 shadow-md flex items-center justify-center opacity-0 transition-opacity group-hover:opacity-100 disabled:hidden"
-    aria-label="Scroll left"
-  >
+  <button class="scroll-btn scroll-left absolute left-2 top-1/2 -translate-y-1/2 z-20 h-10 w-10 rounded-full bg-white/90 shadow-md flex items-center justify-center opacity-0 transition-opacity group-hover:opacity-100 disabled:hidden">
     <Icon name="ri:arrow-drop-left-line" class="h-8 w-8 text-black" />
   </button>
 
-  <!-- Changed: Added pb-2 to give breathing room for drop shadows without triggering vertical scroll -->
-  <div 
+  <div
     class="gallery-scroll flex w-full overflow-x-auto overflow-y-hidden scroll-smooth snap-x snap-mandatory hide-scrollbar pb-2 pt-2"
-    style={`--rows: ${rows}; --gap: ${gap}; --visibleCols: ${visibleCols}; --rowHeight: ${rowHeight};`}
+    style={`--rows:${rows}; --gap:${gap}; --visibleCols:${visibleCols}; --rowHeight:${rowHeight};`}
   >
     <div class="gallery-grid pr-8">
-      {images.map((img) => (
-        <div class="item snap-start" data-src={img.src} data-alt={img.alt}>
-          <img src={img.src} alt={img.alt} loading="lazy" />
-        </div>
-      ))}
+      {images.map((img) => {
+        const meta = typeof img.src === "string" ? null : img.src;
+        const url = meta ? meta.src : img.src;
+
+        return (
+          <div class="item snap-start" data-src={url} data-alt={img.alt}>
+            {meta ? (
+              <AstroPicture
+                src={meta}
+                alt={img.alt}
+                loading="lazy"
+                format="avif"
+                fit="contain"
+                class="rounded-lg"
+              />
+            ) : (
+              <img src={url} alt={img.alt} loading="lazy" />
+            )}
+          </div>
+        );
+      })}
     </div>
   </div>
 
-  <button 
-    class="scroll-btn scroll-right absolute right-2 top-1/2 -translate-y-1/2 z-20 h-10 w-10 rounded-full bg-white/90 shadow-md flex items-center justify-center opacity-0 transition-opacity group-hover:opacity-100 disabled:hidden"
-    aria-label="Scroll right"
-  >
+  <button class="scroll-btn scroll-right absolute right-2 top-1/2 -translate-y-1/2 z-20 h-10 w-10 rounded-full bg-white/90 shadow-md flex items-center justify-center opacity-0 transition-opacity group-hover:opacity-100 disabled:hidden">
     <Icon name="ri:arrow-drop-right-line" class="h-8 w-8 text-black" />
   </button>
-
 </div>
-
-<script>
-  const containers = document.querySelectorAll('.gallery-container');
-
-  containers.forEach(container => {
-    const scrollArea = container.querySelector('.gallery-scroll') as HTMLElement;
-    const btnLeft = container.querySelector('.scroll-left') as HTMLButtonElement;
-    const btnRight = container.querySelector('.scroll-right') as HTMLButtonElement;
-
-    if (!scrollArea || !btnLeft || !btnRight) return;
-
-    btnLeft.addEventListener('click', () => {
-      const scrollAmount = scrollArea.clientWidth * 0.8; 
-      scrollArea.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
-    });
-
-    btnRight.addEventListener('click', () => {
-      const scrollAmount = scrollArea.clientWidth * 0.8; 
-      scrollArea.scrollBy({ left: scrollAmount, behavior: 'smooth' });
-    });
-
-    const handleScroll = () => {
-      btnLeft.disabled = scrollArea.scrollLeft <= 1;
-      btnRight.disabled = Math.ceil(scrollArea.scrollLeft + scrollArea.clientWidth) >= scrollArea.scrollWidth - 1;
-    };
-
-    scrollArea.addEventListener('scroll', handleScroll);
-    handleScroll();
-  });
-
-  // Modal logic
-  document.addEventListener("click", (e) => {
-    const item = (e.target as HTMLElement).closest(".item") as HTMLElement;
-    if (!item || !item.dataset.src) return;
-
-    const modal = document.createElement("div");
-    modal.className = "modal";
-
-    const closeBtn = document.createElement("div");
-    closeBtn.className = "modal-close";
-    closeBtn.innerHTML = "&times;";
-    closeBtn.onclick = () => modal.remove();
-
-    const fullImg = document.createElement("img");
-    fullImg.src = item.dataset.src;
-    fullImg.alt = item.dataset.alt || "";
-
-    modal.appendChild(closeBtn);
-    modal.appendChild(fullImg);
-    document.body.appendChild(modal);
-  });
-</script>
-
-<style>
-  @reference "../styles/global.css";
-
-  .hide-scrollbar {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-  }
-  .hide-scrollbar::-webkit-scrollbar {
-    display: none;
-  }
-
-  .gallery-grid {
-    display: grid;
-    /* FIX: Explicitly set the row height instead of using 1fr */
-    grid-template-rows: repeat(var(--rows), var(--rowHeight));
-    grid-auto-flow: column;
-    grid-auto-columns: calc((100% / var(--visibleCols)) - var(--gap));
-    gap: var(--gap);
-    padding: 0.25rem; 
-    height: max-content; /* Ensure grid doesn't stretch beyond its content */
-  }
-
-  @media (max-width: 640px) {
-    .gallery-grid {
-      grid-auto-columns: calc((100% / 1.15) - var(--gap));
-    }
-  }
-
-  .item {
-    position: relative;
-    cursor: zoom-in;
-    /* Height is now controlled by the CSS Grid rowHeight, so we just fill the cell */
-    height: 100%;
-    width: 100%;
-  }
-
-  .item img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain; 
-    border-radius: 6px;
-    background-color: #f8f9fa;
-    transition: transform 0.25s ease, box-shadow 0.25s ease;
-  }
-
-  .item:hover img {
-    position: absolute;
-    z-index: 10;
-    /* Keep hover pop-out slightly contained to avoid clipping the parent completely */
-    transform: scale(1.4);
-    box-shadow: 0 8px 24px rgba(0,0,0,0.25);
-    border-radius: 8px;
-    background: white;
-  }
-
-  :global(.modal) {
-    position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: flex; justify-content: center; align-items: center; z-index: 9999;
-  }
-  :global(.modal img) { max-width: 90vw; max-height: 90vh; border-radius: 8px; }
-  :global(.modal-close) { position: fixed; top: 1rem; right: 1rem; font-size: 2rem; color: white; cursor: pointer; }
-</style>
