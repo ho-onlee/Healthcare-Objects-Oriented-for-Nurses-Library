@@ -18,11 +18,15 @@ const rowHeight = Astro.props.rowHeight ?? "200px";
 ---
 
 <div class="gallery-container relative w-full group my-6 overflow-hidden">
-  <button class="scroll-btn scroll-left absolute left-2 top-1/2 -translate-y-1/2 z-20 h-10 w-10 rounded-full bg-white/90 shadow-md flex items-center justify-center opacity-0 transition-opacity group-hover:opacity-100 disabled:hidden">
+  
+  <button 
+    class="scroll-btn scroll-left absolute left-2 top-1/2 -translate-y-1/2 z-20 h-10 w-10 rounded-full bg-white/90 shadow-md flex items-center justify-center opacity-0 transition-opacity group-hover:opacity-100 disabled:hidden"
+    aria-label="Scroll left"
+  >
     <Icon name="ri:arrow-drop-left-line" class="h-8 w-8 text-black" />
   </button>
 
-  <div
+  <div 
     class="gallery-scroll flex w-full overflow-x-auto overflow-y-hidden scroll-smooth snap-x snap-mandatory hide-scrollbar pb-2 pt-2"
     style={`--rows:${rows}; --gap:${gap}; --visibleCols:${visibleCols}; --rowHeight:${rowHeight};`}
   >
@@ -33,25 +37,163 @@ const rowHeight = Astro.props.rowHeight ?? "200px";
 
         return (
           <div class="item snap-start" data-src={url} data-alt={img.alt}>
-            {meta ? (
-              <AstroPicture
-                src={meta}
-                alt={img.alt}
-                loading="lazy"
-                format="avif"
-                fit="contain"
-                class="rounded-lg"
-              />
-            ) : (
-              <img src={url} alt={img.alt} loading="lazy" />
-            )}
+            <div class="pic-wrapper">
+              {meta ? (
+                <AstroPicture
+                  src={meta}
+                  alt={img.alt}
+                  loading="lazy"
+                  format="avif"
+                  fit="contain"
+                  class="pic-img"
+                />
+              ) : (
+                <img src={url} alt={img.alt} loading="lazy" class="pic-img" />
+              )}
+            </div>
           </div>
         );
       })}
     </div>
   </div>
 
-  <button class="scroll-btn scroll-right absolute right-2 top-1/2 -translate-y-1/2 z-20 h-10 w-10 rounded-full bg-white/90 shadow-md flex items-center justify-center opacity-0 transition-opacity group-hover:opacity-100 disabled:hidden">
+  <button 
+    class="scroll-btn scroll-right absolute right-2 top-1/2 -translate-y-1/2 z-20 h-10 w-10 rounded-full bg-white/90 shadow-md flex items-center justify-center opacity-0 transition-opacity group-hover:opacity-100 disabled:hidden"
+    aria-label="Scroll right"
+  >
     <Icon name="ri:arrow-drop-right-line" class="h-8 w-8 text-black" />
   </button>
+
 </div>
+
+<script>
+  const containers = document.querySelectorAll('.gallery-container');
+
+  containers.forEach(container => {
+    const scrollArea = container.querySelector('.gallery-scroll');
+    const btnLeft = container.querySelector('.scroll-left');
+    const btnRight = container.querySelector('.scroll-right');
+
+    if (!scrollArea || !btnLeft || !btnRight) return;
+
+    btnLeft.addEventListener('click', () => {
+      scrollArea.scrollBy({ left: -scrollArea.clientWidth * 0.8, behavior: 'smooth' });
+    });
+
+    btnRight.addEventListener('click', () => {
+      scrollArea.scrollBy({ left: scrollArea.clientWidth * 0.8, behavior: 'smooth' });
+    });
+
+    const handleScroll = () => {
+      btnLeft.disabled = scrollArea.scrollLeft <= 1;
+      btnRight.disabled = Math.ceil(scrollArea.scrollLeft + scrollArea.clientWidth) >= scrollArea.scrollWidth - 1;
+    };
+
+    scrollArea.addEventListener('scroll', handleScroll);
+    handleScroll();
+  });
+
+  // Modal logic
+  document.addEventListener("click", (e) => {
+    const item = e.target.closest(".item");
+    if (!item || !item.dataset.src) return;
+
+    const modal = document.createElement("div");
+    modal.className = "modal";
+
+    const closeBtn = document.createElement("div");
+    closeBtn.className = "modal-close";
+    closeBtn.innerHTML = "&times;";
+    closeBtn.onclick = () => modal.remove();
+
+    const fullImg = document.createElement("img");
+    fullImg.src = item.dataset.src;
+    fullImg.alt = item.dataset.alt || "";
+
+    modal.appendChild(closeBtn);
+    modal.appendChild(fullImg);
+    document.body.appendChild(modal);
+  });
+</script>
+
+<style>
+  @reference "../styles/global.css";
+
+  .hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .gallery-grid {
+    display: grid;
+    grid-template-rows: repeat(var(--rows), var(--rowHeight));
+    grid-auto-flow: column;
+    grid-auto-columns: calc((100% / var(--visibleCols)) - var(--gap));
+    gap: var(--gap);
+    padding: 0.25rem;
+    height: max-content;
+  }
+
+  @media (max-width: 640px) {
+    .gallery-grid {
+      grid-auto-columns: calc((100% / 1.15) - var(--gap));
+    }
+  }
+
+  .item {
+    position: relative;
+    cursor: zoom-in;
+    height: 100%;
+    width: 100%;
+  }
+
+  .pic-wrapper {
+    width: 100%;
+    height: 100%;
+    position: relative;
+  }
+
+  .pic-img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    border-radius: 6px;
+    background-color: #f8f9fa;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+  }
+
+  .item:hover .pic-img {
+    position: absolute;
+    z-index: 10;
+    transform: scale(1.4);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+    border-radius: 8px;
+    background: white;
+  }
+
+  :global(.modal) {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.85);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+  }
+  :global(.modal img) {
+    max-width: 90vw;
+    max-height: 90vh;
+    border-radius: 8px;
+  }
+  :global(.modal-close) {
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    font-size: 2rem;
+    color: white;
+    cursor: pointer;
+  }
+</style>
