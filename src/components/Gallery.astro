@@ -10,7 +10,7 @@ interface Props {
 }
 
 // 1. Auto-load images
-const files = import.meta.glob("../../assets/Figures/*.jpg", { eager: true });
+const files = import.meta.glob("../assets/Figures/*.jpg", { eager: true });
 const autoPics = Object.keys(files).map((path) => ({
   src: path,
   alt: path.split("/").pop()?.replace(".jpg", "") || ""
