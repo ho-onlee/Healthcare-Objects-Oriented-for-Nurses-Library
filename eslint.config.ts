@@ -40,6 +40,7 @@ export default defineConfig([
       parserOptions: {
         // Enable project service for better TypeScript integration
         projectService: true,
+        // @ts-ignore
         tsconfigRootDir: import.meta.dirname,
       },
     },

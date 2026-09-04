@@ -1,4 +1,4 @@
-# Hospital Objects: An Object Library for Robotic Nursing Assistance
+# Healthcare Objects: An Object Library for Robotic Nursing Assistance
 
 This project investigates the physical characteristics of hospital nursing
 supplies that must be understood before robots can reliably assist with
